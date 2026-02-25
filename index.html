@@ -1281,6 +1281,7 @@
                         <a href="#pricing">Precios</a>
                     </div>
                     <div class="nav-actions">
+                        <button class="btn btn-secondary" id="demoBtn">Ver Demo</button>
                         <button class="btn btn-secondary" id="loginBtn">Iniciar Sesión</button>
                         <button class="btn btn-primary" id="registerBtn">Comenzar Gratis</button>
                     </div>
@@ -1293,7 +1294,7 @@
                     <p class="hero-subtitle">Gestiona clientes, trámites y expedientes con inteligencia artificial integrada. Flexible, escalable y diseñado para despachos profesionales.</p>
                     <div class="hero-buttons">
                         <button class="btn btn-primary btn-lg" id="heroCTA">Comenzar Ahora →</button>
-                        <button class="btn btn-secondary btn-lg">Ver Demo</button>
+                        <button class="btn btn-secondary btn-lg" id="heroDemo">Ver Demo</button>
                     </div>
                     <div class="hero-stats">
                         <div class="stat-item">
@@ -2010,6 +2011,8 @@
         const heroCTA = document.getElementById('heroCTA');
         const ctaFinalBtn = document.getElementById('ctaFinalBtn');
         const closeModal = document.getElementById('closeModal');
+        const demoBtn = document.getElementById('demoBtn');
+        const heroDemo = document.getElementById('heroDemo');
 
         // Show register modal
         function showRegisterModal() {
@@ -2035,6 +2038,25 @@
         heroCTA.addEventListener('click', showRegisterModal);
         ctaFinalBtn.addEventListener('click', showRegisterModal);
         loginBtn.addEventListener('click', showLoginModal);
+
+        // Demo mode - access CRM without registration
+        function showDemoMode() {
+            // Set demo workspace
+            const workspaceSelector = document.getElementById('workspaceSelector');
+            workspaceSelector.value = 'gobierno';
+            
+            // Hide landing page, show app
+            landingPage.style.display = 'none';
+            appContainer.style.display = 'flex';
+            
+            // Show demo notification
+            setTimeout(() => {
+                alert('🎯 Modo Demo Activado\n\nEstás explorando FlexCRM con datos de demostración. Para guardar tu progreso y desbloquear todas las funciones, crea una cuenta gratuita.');
+            }, 500);
+        }
+
+        demoBtn.addEventListener('click', showDemoMode);
+        heroDemo.addEventListener('click', showDemoMode);
 
         closeModal.addEventListener('click', () => {
             authModal.classList.remove('active');
