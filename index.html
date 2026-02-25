@@ -2222,6 +2222,205 @@
         newDealBtn.addEventListener('click', () => {
             alert('Modal para crear nuevo trámite/deal (a implementar)');
         });
+
+        // Download feature files
+        const downloadFiles = {
+            gobierno: {
+                name: 'configuracion-gobierno.json',
+                content: JSON.stringify({
+                    "workspace_type": "gobierno",
+                    "display_name": "Oficina Gubernamental",
+                    "icon": "🏛️",
+                    "fields": {
+                        "main_entity": "Expediente",
+                        "identifier": "Folio/Número de Expediente",
+                        "custom_fields": [
+                            {"name": "folio", "type": "text", "label": "Folio", "required": true},
+                            {"name": "tipo_tramite", "type": "select", "label": "Tipo de Trámite", "options": ["Licencia", "Permiso", "Registro", "Certificación", "Resolución"]},
+                            {"name": "dependencia", "type": "text", "label": "Dependencia Solicitante"},
+                            {"name": "fecha_recepcion", "type": "date", "label": "Fecha de Recepción"},
+                            {"name": "plazo_legal", "type": "number", "label": "Plazo Legal (días)"},
+                            {"name": "fecha_limite", "type": "date", "label": "Fecha Límite"},
+                            {"name": "funcionario_asignado", "type": "text", "label": "Funcionario Asignado"},
+                            {"name": "observaciones", "type": "textarea", "label": "Observaciones"}
+                        ]
+                    },
+                    "pipeline_stages": [
+                        {"name": "Recibido", "color": "#3b82f6"},
+                        {"name": "En Revisión", "color": "#f59e0b"},
+                        {"name": "Requiere Información", "color": "#a855f7"},
+                        {"name": "En Proceso", "color": "#06b6d4"},
+                        {"name": "Dictamen", "color": "#8b5cf6"},
+                        {"name": "Aprobado", "color": "#22c55e"},
+                        {"name": "Rechazado", "color": "#ef4444"}
+                    ],
+                    "document_types": ["Solicitud", "Identificación", "Comprobante de Domicilio", "Documentación Técnica", "Dictamen", "Resolución", "Oficio"],
+                    "ai_prompts": {
+                        "draft_resolution": "Redacta una resolución administrativa para el expediente {{folio}} de tipo {{tipo_tramite}}, considerando: {{context}}",
+                        "summarize": "Resume el expediente {{folio}} incluyendo: solicitante, tipo de trámite, fechas clave, estado actual y pendientes",
+                        "check_deadline": "Analiza el plazo legal de {{plazo_legal}} días iniciado el {{fecha_recepcion}}. Calcula días transcurridos y días restantes"
+                    }
+                }, null, 2)
+            },
+            abogados: {
+                name: 'configuracion-abogados.json',
+                content: JSON.stringify({
+                    "workspace_type": "abogados",
+                    "display_name": "Despacho de Abogados",
+                    "icon": "⚖️",
+                    "fields": {
+                        "main_entity": "Caso/Expediente Judicial",
+                        "identifier": "Número de Expediente Judicial",
+                        "custom_fields": [
+                            {"name": "num_expediente", "type": "text", "label": "Número de Expediente", "required": true},
+                            {"name": "materia", "type": "select", "label": "Materia", "options": ["Civil", "Mercantil", "Penal", "Laboral", "Familiar", "Amparo", "Administrativa"]},
+                            {"name": "tipo_juicio", "type": "text", "label": "Tipo de Juicio"},
+                            {"name": "juzgado", "type": "text", "label": "Juzgado/Tribunal"},
+                            {"name": "juez", "type": "text", "label": "Juez"},
+                            {"name": "actor", "type": "text", "label": "Actor/Demandante"},
+                            {"name": "demandado", "type": "text", "label": "Demandado"},
+                            {"name": "monto_reclamacion", "type": "currency", "label": "Monto de Reclamación"},
+                            {"name": "fecha_presentacion", "type": "date", "label": "Fecha de Presentación"},
+                            {"name": "proxima_audiencia", "type": "datetime", "label": "Próxima Audiencia"},
+                            {"name": "abogado_responsable", "type": "text", "label": "Abogado Responsable"},
+                            {"name": "estrategia", "type": "textarea", "label": "Estrategia Legal"}
+                        ]
+                    },
+                    "pipeline_stages": [
+                        {"name": "Consulta Inicial", "color": "#3b82f6"},
+                        {"name": "Demanda Preparada", "color": "#f59e0b"},
+                        {"name": "Demanda Presentada", "color": "#a855f7"},
+                        {"name": "Contestación", "color": "#06b6d4"},
+                        {"name": "Pruebas", "color": "#8b5cf6"},
+                        {"name": "Alegatos", "color": "#ec4899"},
+                        {"name": "Sentencia", "color": "#22c55e"},
+                        {"name": "Cerrado", "color": "#64748b"}
+                    ],
+                    "document_types": ["Demanda", "Contestación", "Escrito", "Promoción", "Pruebas", "Alegatos", "Sentencia", "Convenio", "Poder Notarial"],
+                    "ai_prompts": {
+                        "draft_demand": "Redacta una demanda de {{materia}} para el juicio {{tipo_juicio}}, representando a {{actor}} contra {{demandado}}, considerando: {{context}}",
+                        "draft_brief": "Redacta un escrito legal para el expediente {{num_expediente}}, dirigido al {{juzgado}}, sobre: {{subject}}",
+                        "summarize_case": "Resume el caso {{num_expediente}} incluyendo: partes, materia, cronología de eventos, estado procesal actual y próximas acciones",
+                        "legal_research": "Investiga jurisprudencia y precedentes relevantes para: {{legal_question}}"
+                    }
+                }, null, 2)
+            },
+            contabilidad: {
+                name: 'configuracion-contabilidad.json',
+                content: JSON.stringify({
+                    "workspace_type": "contabilidad",
+                    "display_name": "Despacho de Contabilidad",
+                    "icon": "🧾",
+                    "fields": {
+                        "main_entity": "Cliente/Contribuyente",
+                        "identifier": "RFC",
+                        "custom_fields": [
+                            {"name": "rfc", "type": "text", "label": "RFC", "required": true, "pattern": "^[A-ZÑ&]{3,4}\\d{6}[A-Z\\d]{3}$"},
+                            {"name": "razon_social", "type": "text", "label": "Razón Social/Nombre", "required": true},
+                            {"name": "regimen_fiscal", "type": "select", "label": "Régimen Fiscal", "options": ["Personas Morales", "Personas Físicas con Actividad Empresarial", "RESICO", "Sueldos y Salarios", "Arrendamiento", "Honorarios"]},
+                            {"name": "tipo_servicio", "type": "multiselect", "label": "Servicios Contratados", "options": ["Contabilidad", "Declaraciones Mensuales", "Declaración Anual", "IMSS", "Nómina", "Auditoría", "Consultoría Fiscal"]},
+                            {"name": "ejercicio_fiscal", "type": "text", "label": "Ejercicio Fiscal Actual"},
+                            {"name": "contador_asignado", "type": "text", "label": "Contador Asignado"},
+                            {"name": "fecha_alta_sat", "type": "date", "label": "Fecha de Alta SAT"},
+                            {"name": "obligaciones", "type": "textarea", "label": "Obligaciones Fiscales"},
+                            {"name": "proxima_declaracion", "type": "date", "label": "Próxima Declaración"}
+                        ]
+                    },
+                    "pipeline_stages": [
+                        {"name": "Prospecto", "color": "#3b82f6"},
+                        {"name": "Documentación", "color": "#f59e0b"},
+                        {"name": "Activo", "color": "#22c55e"},
+                        {"name": "En Revisión SAT", "color": "#a855f7"},
+                        {"name": "Requiere Atención", "color": "#ef4444"},
+                        {"name": "Al Corriente", "color": "#10b981"},
+                        {"name": "Inactivo", "color": "#64748b"}
+                    ],
+                    "document_types": ["Declaración Mensual", "Declaración Anual", "Constancia de Situación Fiscal", "CFDI", "Contabilidad Electrónica", "Papeles de Trabajo", "Dictamen Fiscal", "Opinión de Cumplimiento"],
+                    "ai_prompts": {
+                        "tax_analysis": "Analiza la situación fiscal del contribuyente {{rfc}} ({{razon_social}}) bajo el régimen {{regimen_fiscal}}, considerando: {{context}}",
+                        "deadline_reminder": "Genera recordatorio de obligaciones fiscales para {{razon_social}} (RFC: {{rfc}}) del período {{periodo}}",
+                        "tax_calculation": "Calcula el ISR para {{razon_social}} considerando ingresos: {{ingresos}}, deducciones: {{deducciones}}, régimen: {{regimen_fiscal}}",
+                        "summarize_client": "Resume la situación del cliente {{razon_social}} incluyendo: régimen fiscal, servicios contratados, obligaciones pendientes y recomendaciones"
+                    }
+                }, null, 2)
+            },
+            inmobiliaria: {
+                name: 'configuracion-inmobiliaria.json',
+                content: JSON.stringify({
+                    "workspace_type": "inmobiliaria",
+                    "display_name": "Inmobiliaria y Construcción",
+                    "icon": "🏗️",
+                    "fields": {
+                        "main_entity": "Proyecto/Propiedad",
+                        "identifier": "Código de Propiedad/Proyecto",
+                        "custom_fields": [
+                            {"name": "codigo", "type": "text", "label": "Código", "required": true},
+                            {"name": "tipo", "type": "select", "label": "Tipo", "options": ["Casa", "Departamento", "Terreno", "Local Comercial", "Bodega", "Oficina", "Desarrollo"]},
+                            {"name": "direccion", "type": "text", "label": "Dirección Completa"},
+                            {"name": "superficie_terreno", "type": "number", "label": "Superficie de Terreno (m²)"},
+                            {"name": "superficie_construccion", "type": "number", "label": "Superficie de Construcción (m²)"},
+                            {"name": "precio_venta", "type": "currency", "label": "Precio de Venta"},
+                            {"name": "propietario", "type": "text", "label": "Propietario/Vendedor"},
+                            {"name": "comprador", "type": "text", "label": "Comprador Potencial"},
+                            {"name": "agente", "type": "text", "label": "Agente Responsable"},
+                            {"name": "estado_escrituracion", "type": "select", "label": "Estado de Escrituración", "options": ["Sin Iniciar", "Documentación en Proceso", "En Notaría", "Escriturado", "Registrado"]},
+                            {"name": "avance_obra", "type": "percentage", "label": "Avance de Obra (%)"},
+                            {"name": "fecha_entrega", "type": "date", "label": "Fecha de Entrega Estimada"}
+                        ]
+                    },
+                    "pipeline_stages": [
+                        {"name": "Lead", "color": "#3b82f6"},
+                        {"name": "Contactado", "color": "#f59e0b"},
+                        {"name": "Visita Programada", "color": "#a855f7"},
+                        {"name": "Propuesta Enviada", "color": "#06b6d4"},
+                        {"name": "Negociación", "color": "#8b5cf6"},
+                        {"name": "Apartado", "color": "#ec4899"},
+                        {"name": "Escrituración", "color": "#f97316"},
+                        {"name": "Cerrado/Vendido", "color": "#22c55e"}
+                    ],
+                    "document_types": ["Escritura", "Contrato de Compraventa", "Avalúo", "Certificado de Libertad de Gravamen", "Predial", "Planos", "Licencia de Construcción", "Recibo de Enganche"],
+                    "ai_prompts": {
+                        "property_description": "Redacta una descripción comercial atractiva para la propiedad {{codigo}}: {{tipo}} de {{superficie_construccion}}m² ubicado en {{direccion}}, precio: {{precio_venta}}",
+                        "contract_draft": "Redacta un contrato de compraventa para la propiedad {{codigo}} entre {{propietario}} (vendedor) y {{comprador}} (comprador), monto: {{precio_venta}}",
+                        "progress_report": "Genera un reporte de avance del proyecto {{codigo}}, avance actual: {{avance_obra}}%, fecha estimada de entrega: {{fecha_entrega}}, pendientes: {{context}}",
+                        "summarize_deal": "Resume la operación de la propiedad {{codigo}} incluyendo: características, partes involucradas, estado actual y próximos pasos"
+                    }
+                }, null, 2)
+            }
+        };
+
+        // Add download functionality (triggered via console or future UI)
+        window.downloadWorkspaceConfig = function(workspaceType) {
+            const config = downloadFiles[workspaceType];
+            if (!config) {
+                console.error('Workspace type not found:', workspaceType);
+                return;
+            }
+            
+            const blob = new Blob([config.content], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = config.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log(`✅ Archivo descargado: ${config.name}`);
+        };
+
+        // Download all configs
+        window.downloadAllConfigs = function() {
+            Object.keys(downloadFiles).forEach(type => {
+                setTimeout(() => downloadWorkspaceConfig(type), 500);
+            });
+            console.log('📦 Descargando todos los archivos de configuración...');
+        };
+
+        console.log('💡 Archivos de configuración disponibles:');
+        console.log('   Para descargar individualmente: downloadWorkspaceConfig("gobierno")');
+        console.log('   Para descargar todos: downloadAllConfigs()');
     </script>
 </body>
 </html>
