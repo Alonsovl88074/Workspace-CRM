@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexCRM - Sistema de Gestión Modular</title>
+    <style>
+        :root {
+            --color-primary: #38bdf8;
+            --color-primary-hover: #0ea5e9;
+            --color-bg-base: #0f172a;
+            --color-bg-elevated: #1e293b;
+            --color-bg-surface: #334155;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-success: #22c55e;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-border: rgba(148, 163, 184, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--color-bg-elevated);
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .workspace-selector {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            width: 100%;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+            padding: 0 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--color-bg-surface);
+            color: var(--color-text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--color-primary);
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 70px;
+            background: var(--color-bg-elevated);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-secondary);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-surface);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-bg-elevated);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--color-success);
+        }
+
+        .stat-change.negative {
+            color: var(--color-danger);
+        }
+
+        /* Pipeline View */
+        .pipeline-container {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .pipeline-column {
+            min-width: 300px;
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .pipeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .pipeline-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .pipeline-count {
+            background: var(--color-bg-surface);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .deal-card {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .deal-card:hover {
+            border-color: var(--color-primary);
+            transform: translateX(4px);
+        }
+
+        .deal-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .deal-company {
+            color: var(--color-text-secondary);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .deal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .deal-value {
+            color: var(--color-success);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .deal-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* AI Assistant Panel */
+        .ai-assistant {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 400px;
+            max-height: 600px;
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .ai-assistant.active {
+            display: flex;
+        }
+
+        .ai-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-status {
+            width: 8px;
+            height: 8px;
+            background: var(--color-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .ai-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .ai-message.user {
+            background: var(--color-primary);
+            color: #0f172a;
+            margin-left: 2rem;
+        }
+
+        .ai-message.assistant {
+            background: var(--color-bg-surface);
+            margin-right: 2rem;
+        }
+
+        .ai-input-container {
+            padding: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .ai-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+            resize: none;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .ai-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .ai-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-fab.hidden {
+            display: none;
+        }
+
+        /* Table View */
+        .table-container {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--color-bg-surface);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid var(--color-border);
+            font-size: 0.875rem;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--color-bg-surface);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.prospecto {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .status-badge.contactado {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .status-badge.proceso {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a78bfa;
+        }
+
+        .status-badge.ganado {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+
+        .status-badge.perdido {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline-container {
+                flex-direction: column;
+            }
+
+            .ai-assistant {
+                width: calc(100vw - 2rem);
+                right: 1rem;
+                left: 1rem;
+            }
+
+            .ai-fab {
+                right: 1rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Landing Page Styles */
+        .landing-page {
+            width: 100%;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .landing-header {
+            background: linear-gradient(135deg, var(--color-bg-base) 0%, var(--color-bg-elevated) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .landing-nav {
+            border-bottom: 1px solid var(--color-border);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-landing {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hero-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Sections */
+        .landing-section {
+            padding: 6rem 2rem;
+        }
+
+        .landing-section.bg-elevated {
+            background: var(--color-bg-elevated);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header-center {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--color-text-secondary);
+        }
+
+        .section-text {
+            font-size: 1.125rem;
+            color: var(--color-text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+            box-shadow: 0 20px 25px -5px rgba(56, 189, 248, 0.1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(56, 189, 248, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--color-primary);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Solutions Grid */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .solution-card {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+        }
+
+        .solution-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .solution-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .solution-description {
+            color: var(--color-text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .solution-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .solution-features li {
+            padding: 0.5rem 0;
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .solution-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        /* AI Showcase */
+        .ai-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .ai-features-list {
+            margin: 2rem 0;
+        }
+
+        .ai-feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--color-primary);
+            flex-shrink: 0;
+        }
+
+        .ai-models {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .model-badge {
+            padding: 0.5rem 1rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--color-primary);
+        }
+
+        .chat-demo {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .chat-message.user {
+            background: var(--color-primary);
+            color: #0f172a;
+            margin-left: 3rem;
+        }
+
+        .chat-message.assistant {
+            background: var(--color-bg-surface);
+            margin-right: 3rem;
+        }
+
+        /* Pricing Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--color-primary);
+            box-shadow: 0 20px 25px -5px rgba(56, 189, 248, 0.15);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-primary);
+            color: #0f172a;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            margin-bottom: 1rem;
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .price-period {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+        }
+
+        .pricing-description {
+            color: var(--color-text-secondary);
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            color: var(--color-text-secondary);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #0ea5e9 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+
+        .cta-text {
+            font-size: 1.25rem;
+            color: rgba(15, 23, 42, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .landing-footer {
+            background: var(--color-bg-elevated);
+            border-top: 1px solid var(--color-border);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section a {
+            display: block;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--color-primary);
+        }
+
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-top: 1rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .modal-footer-text {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .modal-footer-text a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .modal-footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-stats {
+                gap: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .ai-showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .chat-message.user {
+                margin-left: 1rem;
+            }
+
+            .chat-message.assistant {
+                margin-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page">
+        <!-- Hero Section -->
+        <header class="landing-header">
+            <nav class="landing-nav">
+                <div class="nav-container">
+                    <div class="logo-landing">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9a1 1 0 012 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+                        </svg>
+                        FlexCRM
+                    </div>
+                    <div class="nav-links">
+                        <a href="#features">Características</a>
+                        <a href="#solutions">Soluciones</a>
+                        <a href="#ai">IA Integrada</a>
+                        <a href="#pricing">Precios</a>
+                    </div>
+                    <div class="nav-actions">
+                        <button class="btn btn-secondary" id="loginBtn">Iniciar Sesión</button>
+                        <button class="btn btn-primary" id="registerBtn">Comenzar Gratis</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">El CRM que se adapta a tu negocio</h1>
+                    <p class="hero-subtitle">Gestiona clientes, trámites y expedientes con inteligencia artificial integrada. Flexible, escalable y diseñado para despachos profesionales.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-lg" id="heroCTA">Comenzar Ahora →</button>
+                        <button class="btn btn-secondary btn-lg">Ver Demo</button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Empresas activas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50K+</div>
+                            <div class="stat-label">Trámites gestionados</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Satisfacción</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Features Section -->
+        <section id="features" class="landing-section">
+            <div class="section-container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Todo lo que necesitas en un solo lugar</h2>
+                    <p class="section-subtitle">Herramientas profesionales diseñadas para maximizar tu productividad</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Pipeline Visual</h3>
+                        <p class="feature-description">Visualiza tu embudo de ventas con tableros Kanban intuitivos. Arrastra y organiza trámites en tiempo real.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Gestión de Contactos</h3>
+                        <p class="feature-description">Base de datos centralizada con historial completo de interacciones, documentos y seguimiento automático.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Gestión Documental</h3>
+                        <p class="feature-description">Almacena, versiona y comparte documentos de forma segura. Búsqueda inteligente con IA.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Reportes Avanzados</h3>
+                        <p class="feature-description">Dashboards personalizables con métricas en tiempo real. Exporta reportes en PDF y Excel.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Calendario Integrado</h3>
+                        <p class="feature-description">Gestiona citas, audiencias y plazos. Sincroniza con Google Calendar y recibe recordatorios automáticos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">IA Conversacional</h3>
+                        <p class="feature-description">Asistente inteligente que redacta documentos, analiza datos y responde consultas en lenguaje natural.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solutions Section -->
+        <section id="solutions" class="landing-section bg-elevated">
+            <div class="section-container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Soluciones especializadas para tu industria</h2>
+                    <p class="section-subtitle">Configuraciones predefinidas que se adaptan a tu forma de trabajo</p>
+                </div>
+                <div class="solutions-grid">
+                    <div class="solution-card">
+                        <div class="solution-icon">🏛️</div>
+                        <h3 class="solution-title">Oficinas Gubernamentales</h3>
+                        <p class="solution-description">Gestión de trámites, expedientes ciudadanos, ventanillas y plazos oficiales.</p>
+                        <ul class="solution-features">
+                            <li>Folios y números de expediente</li>
+                            <li>Control de plazos legales</li>
+                            <li>Registro de oficios y resoluciones</li>
+                        </ul>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">⚖️</div>
+                        <h3 class="solution-title">Despachos de Abogados</h3>
+                        <p class="solution-description">Gestión de casos, expedientes judiciales, audiencias y argumentación legal.</p>
+                        <ul class="solution-features">
+                            <li>Timeline de casos y sentencias</li>
+                            <li>Calendario de audiencias</li>
+                            <li>IA para redacción de escritos</li>
+                        </ul>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">🧾</div>
+                        <h3 class="solution-title">Despachos de Contabilidad</h3>
+                        <p class="solution-description">Control de contribuyentes, declaraciones fiscales y cumplimiento normativo.</p>
+                        <ul class="solution-features">
+                            <li>Gestión por RFC y ejercicio fiscal</li>
+                            <li>Alertas de fechas SAT/IMSS</li>
+                            <li>Análisis fiscal automatizado</li>
+                        </ul>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">🏗️</div>
+                        <h3 class="solution-title">Inmobiliaria y Construcción</h3>
+                        <p class="solution-description">Pipeline de ventas, avances de obra, escrituración y documentación técnica.</p>
+                        <ul class="solution-features">
+                            <li>Seguimiento de leads a escritura</li>
+                            <li>Gestión de planos y contratos</li>
+                            <li>Control de avances de obra</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Section -->
+        <section id="ai" class="landing-section">
+            <div class="section-container">
+                <div class="ai-showcase">
+                    <div class="ai-showcase-content">
+                        <h2 class="section-title">Potenciado por Inteligencia Artificial de última generación</h2>
+                        <p class="section-text">FlexCRM integra modelos de IA abiertos de vanguardia para automatizar tareas repetitivas y potenciar tu productividad.</p>
+                        <div class="ai-features-list">
+                            <div class="ai-feature-item">
+                                <svg class="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Redacción automática de contratos, oficios y propuestas</span>
+                            </div>
+                            <div class="ai-feature-item">
+                                <svg class="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Resumen inteligente de expedientes y documentos largos</span>
+                            </div>
+                            <div class="ai-feature-item">
+                                <svg class="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Análisis predictivo de pipeline y sugerencias de próximos pasos</span>
+                            </div>
+                            <div class="ai-feature-item">
+                                <svg class="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Extracción de datos de documentos escaneados (OCR inteligente)</span>
+                            </div>
+                        </div>
+                        <div class="ai-models">
+                            <div class="model-badge">Llama 3.3</div>
+                            <div class="model-badge">DeepSeek R1</div>
+                            <div class="model-badge">Qwen 2.5</div>
+                        </div>
+                    </div>
+                    <div class="ai-showcase-visual">
+                        <div class="chat-demo">
+                            <div class="chat-message assistant">¿En qué puedo ayudarte hoy?</div>
+                            <div class="chat-message user">Resume el expediente 2024-0567</div>
+                            <div class="chat-message assistant">
+                                <strong>Resumen del Expediente 2024-0567</strong><br><br>
+                                <em>Cliente:</em> Constructora del Norte SA<br>
+                                <em>Trámite:</em> Licencia ambiental<br>
+                                <em>Estado:</em> En proceso de revisión<br><br>
+                                Se recibió solicitud el 15/01/2026. Se han completado 3 de 5 requisitos. Pendiente: dictamen técnico y pago de derechos.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="landing-section bg-elevated">
+            <div class="section-container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Planes que crecen contigo</h2>
+                    <p class="section-subtitle">Comienza gratis, escala cuando lo necesites</p>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 class="pricing-name">Básico</h3>
+                            <div class="pricing-price">
+                                <span class="price-amount">Gratis</span>
+                            </div>
+                            <p class="pricing-description">Ideal para emprendedores y freelancers</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Hasta 50 contactos</li>
+                            <li>Pipeline básico</li>
+                            <li>1 GB de almacenamiento</li>
+                            <li>1 usuario</li>
+                            <li>Soporte por email</li>
+                        </ul>
+                        <button class="btn btn-secondary btn-full">Comenzar Gratis</button>
+                    </div>
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">Más Popular</div>
+                        <div class="pricing-header">
+                            <h3 class="pricing-name">Profesional</h3>
+                            <div class="pricing-price">
+                                <span class="price-amount">$39</span>
+                                <span class="price-period">/mes</span>
+                            </div>
+                            <p class="pricing-description">Para despachos pequeños y medianos</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Contactos ilimitados</li>
+                            <li>Pipelines personalizados</li>
+                            <li>50 GB de almacenamiento</li>
+                            <li>Hasta 5 usuarios</li>
+                            <li>Asistente IA incluido</li>
+                            <li>Reportes avanzados</li>
+                            <li>Soporte prioritario</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full">Probar 14 días gratis</button>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 class="pricing-name">Enterprise</h3>
+                            <div class="pricing-price">
+                                <span class="price-amount">Custom</span>
+                            </div>
+                            <p class="pricing-description">Para organizaciones grandes</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Todo de Profesional</li>
+                            <li>Usuarios ilimitados</li>
+                            <li>Almacenamiento ilimitado</li>
+                            <li>API personalizada</li>
+                            <li>Integraciones dedicadas</li>
+                            <li>Soporte 24/7</li>
+                            <li>Consultoría incluida</li>
+                        </ul>
+                        <button class="btn btn-secondary btn-full">Contactar Ventas</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">¿Listo para transformar tu gestión?</h2>
+                <p class="cta-text">Únete a cientos de empresas que ya optimizan sus procesos con FlexCRM</p>
+                <button class="btn btn-primary btn-lg" id="ctaFinalBtn">Comenzar Ahora - Es Gratis →</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-container">
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <div class="logo-landing">
+                            <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9a1 1 0 012 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+                            </svg>
+                            FlexCRM
+                        </div>
+                        <p class="footer-description">El CRM modular que se adapta a tu negocio con IA integrada.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4 class="footer-title">Producto</h4>
+                        <a href="#features">Características</a>
+                        <a href="#solutions">Soluciones</a>
+                        <a href="#pricing">Precios</a>
+                        <a href="#">Integraciones</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4 class="footer-title">Recursos</h4>
+                        <a href="#">Documentación</a>
+                        <a href="#">API</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Casos de éxito</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4 class="footer-title">Empresa</h4>
+                        <a href="#">Acerca de</a>
+                        <a href="#">Contacto</a>
+                        <a href="#">Privacidad</a>
+                        <a href="#">Términos</a>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 FlexCRM. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Crear tu cuenta FlexCRM</h2>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="authForm">
+                    <div class="form-group">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" class="form-input" placeholder="Juan Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="juan@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de negocio</label>
+                        <select class="form-input" id="businessType" required>
+                            <option value="">Selecciona tu industria</option>
+                            <option value="gobierno">🏛️ Oficina Gubernamental</option>
+                            <option value="abogados">⚖️ Despacho de Abogados</option>
+                            <option value="contabilidad">🧾 Despacho de Contabilidad</option>
+                            <option value="inmobiliaria">🏗️ Inmobiliaria y Construcción</option>
+                            <option value="otro">🏢 Otro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Crear Cuenta</button>
+                </form>
+                <div class="modal-footer">
+                    <p class="modal-footer-text">
+                        <span id="toggleAuthText">¿Ya tienes cuenta?</span>
+                        <a href="#" id="toggleAuth">Inicia sesión aquí</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9a1 1 0 012 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+                    </svg>
+                    FlexCRM
+                </div>
+                <select class="workspace-selector" id="workspaceSelector">
+                    <option value="gobierno">🏛️ Oficina Gubernamental</option>
+                    <option value="abogados">⚖️ Despacho de Abogados</option>
+                    <option value="contabilidad">🧾 Despacho de Contabilidad</option>
+                    <option value="inmobiliaria">🏗️ Inmobiliaria y Construcción</option>
+                </select>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a class="nav-item active" data-view="dashboard">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a class="nav-item" data-view="pipeline">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        Pipeline
+                    </a>
+                    <a class="nav-item" data-view="contacts">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                        </svg>
+                        Contactos
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestión</div>
+                    <a class="nav-item" data-view="tasks">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Tareas
+                    </a>
+                    <a class="nav-item" data-view="documents">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                        </svg>
+                        Documentos
+                    </a>
+                    <a class="nav-item" data-view="calendar">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                        Calendario
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Reportes</div>
+                    <a class="nav-item" data-view="reports">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                        </svg>
+                        Análisis
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="search-bar">
+                    <svg class="search-icon" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                    </svg>
+                    <input type="text" placeholder="Buscar clientes, trámites, expedientes..." id="searchInput">
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-primary" id="newDealBtn">+ Nuevo</button>
+                    <button class="btn btn-secondary">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                        </svg>
+                    </button>
+                    <div class="user-avatar" title="Usuario">U</div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard View -->
+                <div id="dashboardView">
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Resumen general de tu workspace</p>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total de Clientes</div>
+                            <div class="stat-value">248</div>
+                            <div class="stat-change positive">↑ 12% vs mes anterior</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Trámites Activos</div>
+                            <div class="stat-value">42</div>
+                            <div class="stat-change positive">↑ 5 nuevos esta semana</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Tasa de Cierre</div>
+                            <div class="stat-value">68%</div>
+                            <div class="stat-change positive">↑ 3% vs mes anterior</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Valor en Pipeline</div>
+                            <div class="stat-value">$1.2M</div>
+                            <div class="stat-change positive">↑ $200K esta semana</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Trámites Recientes</div>
+                            <button class="btn btn-secondary">Ver todos</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Tipo de Trámite</th>
+                                    <th>Estado</th>
+                                    <th>Valor</th>
+                                    <th>Fecha</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dealsTableBody">
+                                <tr>
+                                    <td>Gobierno Municipal</td>
+                                    <td>Permiso de construcción</td>
+                                    <td><span class="status-badge proceso">En Proceso</span></td>
+                                    <td>$45,000</td>
+                                    <td>20 Feb 2026</td>
+                                    <td>María G.</td>
+                                </tr>
+                                <tr>
+                                    <td>Constructora del Norte</td>
+                                    <td>Licencia ambiental</td>
+                                    <td><span class="status-badge contactado">Contactado</span></td>
+                                    <td>$120,000</td>
+                                    <td>18 Feb 2026</td>
+                                    <td>Juan P.</td>
+                                </tr>
+                                <tr>
+                                    <td>Desarrollo Urbano SA</td>
+                                    <td>Cambio de uso de suelo</td>
+                                    <td><span class="status-badge ganado">Ganado</span></td>
+                                    <td>$85,000</td>
+                                    <td>15 Feb 2026</td>
+                                    <td>Carlos R.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pipeline View -->
+                <div id="pipelineView" class="hidden">
+                    <div class="page-header">
+                        <h1 class="page-title">Pipeline de Trámites</h1>
+                        <p class="page-subtitle">Vista Kanban de todos los trámites activos</p>
+                    </div>
+
+                    <div class="pipeline-container">
+                        <div class="pipeline-column">
+                            <div class="pipeline-header">
+                                <div class="pipeline-title">Prospecto</div>
+                                <div class="pipeline-count">5</div>
+                            </div>
+                            <div class="deal-card">
+                                <div class="deal-title">Permiso de obra nueva</div>
+                                <div class="deal-company">Inmobiliaria Los Pinos</div>
+                                <div class="deal-footer">
+                                    <div class="deal-value">$65,000</div>
+                                    <div class="deal-avatar">JP</div>
+                                </div>
+                            </div>
+                            <div class="deal-card">
+                                <div class="deal-title">Registro de propiedad</div>
+                                <div class="deal-company">Familia Martínez</div>
+                                <div class="deal-footer">
+                                    <div class="deal-value">$28,000</div>
+                                    <div class="deal-avatar">MG</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-column">
+                            <div class="pipeline-header">
+                                <div class="pipeline-title">Contactado</div>
+                                <div class="pipeline-count">8</div>
+                            </div>
+                            <div class="deal-card">
+                                <div class="deal-title">Licencia ambiental</div>
+                                <div class="deal-company">Constructora del Norte</div>
+                                <div class="deal-footer">
+                                    <div class="deal-value">$120,000</div>
+                                    <div class="deal-avatar">CR</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-column">
+                            <div class="pipeline-header">
+                                <div class="pipeline-title">En Proceso</div>
+                                <div class="pipeline-count">12</div>
+                            </div>
+                            <div class="deal-card">
+                                <div class="deal-title">Permiso de construcción</div>
+                                <div class="deal-company">Gobierno Municipal</div>
+                                <div class="deal-footer">
+                                    <div class="deal-value">$45,000</div>
+                                    <div class="deal-avatar">MG</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-column">
+                            <div class="pipeline-header">
+                                <div class="pipeline-title">Revisión</div>
+                                <div class="pipeline-count">6</div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-column">
+                            <div class="pipeline-header">
+                                <div class="pipeline-title">Cerrado/Ganado</div>
+                                <div class="pipeline-count">15</div>
+                            </div>
+                            <div class="deal-card">
+                                <div class="deal-title">Cambio de uso de suelo</div>
+                                <div class="deal-company">Desarrollo Urbano SA</div>
+                                <div class="deal-footer">
+                                    <div class="deal-value">$85,000</div>
+                                    <div class="deal-avatar">CR</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contacts View -->
+                <div id="contactsView" class="hidden">
+                    <div class="page-header">
+                        <h1 class="page-title">Contactos</h1>
+                        <p class="page-subtitle">Gestión de clientes y prospectos</p>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Todos los Contactos</div>
+                            <button class="btn btn-primary">+ Nuevo Contacto</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th>Última Actividad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gobierno Municipal</td>
+                                    <td>Dependencia</td>
+                                    <td>contacto@gob.mx</td>
+                                    <td>(639) 474-0000</td>
+                                    <td><span class="status-badge proceso">Activo</span></td>
+                                    <td>Hace 2 horas</td>
+                                </tr>
+                                <tr>
+                                    <td>Constructora del Norte</td>
+                                    <td>Empresa</td>
+                                    <td>info@constructora.mx</td>
+                                    <td>(639) 474-1234</td>
+                                    <td><span class="status-badge contactado">Lead</span></td>
+                                    <td>Hace 1 día</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- AI Assistant FAB -->
+    <div class="ai-fab" id="aiFab">
+        <svg width="28" height="28" fill="#0f172a" viewBox="0 0 20 20">
+            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+        </svg>
+    </div>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant" id="aiAssistant">
+        <div class="ai-header">
+            <div class="ai-title">
+                <div class="ai-status"></div>
+                Asistente FlexCRM-AI
+            </div>
+            <button class="btn-secondary" style="padding: 0.5rem;" id="closeAI">✕</button>
+        </div>
+        <div class="ai-messages" id="aiMessages">
+            <div class="ai-message assistant">
+                ¡Hola! Soy tu asistente de IA impulsado por modelos abiertos. Puedo ayudarte con:
+                <br><br>
+                • Redactar documentos y propuestas<br>
+                • Resumir expedientes<br>
+                • Analizar tu pipeline<br>
+                • Sugerir próximos pasos<br>
+                <br>
+                ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+        <div class="ai-input-container">
+            <textarea class="ai-input" id="aiInput" placeholder="Escribe tu consulta..." rows="3"></textarea>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" id="aiSendBtn">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        // Show landing page by default
+        const landingPage = document.getElementById('landingPage');
+        const appContainer = document.getElementById('appContainer');
+        const authModal = document.getElementById('authModal');
+        const authForm = document.getElementById('authForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const toggleAuthText = document.getElementById('toggleAuthText');
+        const toggleAuth = document.getElementById('toggleAuth');
+        const businessTypeSelect = document.getElementById('businessType');
+
+        let isLoginMode = false;
+
+        // Landing page buttons
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const heroCTA = document.getElementById('heroCTA');
+        const ctaFinalBtn = document.getElementById('ctaFinalBtn');
+        const closeModal = document.getElementById('closeModal');
+
+        // Show register modal
+        function showRegisterModal() {
+            isLoginMode = false;
+            modalTitle.textContent = 'Crear tu cuenta FlexCRM';
+            toggleAuthText.textContent = '¿Ya tienes cuenta?';
+            toggleAuth.textContent = 'Inicia sesión aquí';
+            businessTypeSelect.parentElement.style.display = 'block';
+            authModal.classList.add('active');
+        }
+
+        // Show login modal
+        function showLoginModal() {
+            isLoginMode = true;
+            modalTitle.textContent = 'Iniciar Sesión';
+            toggleAuthText.textContent = '¿No tienes cuenta?';
+            toggleAuth.textContent = 'Regístrate aquí';
+            businessTypeSelect.parentElement.style.display = 'none';
+            authModal.classList.add('active');
+        }
+
+        registerBtn.addEventListener('click', showRegisterModal);
+        heroCTA.addEventListener('click', showRegisterModal);
+        ctaFinalBtn.addEventListener('click', showRegisterModal);
+        loginBtn.addEventListener('click', showLoginModal);
+
+        closeModal.addEventListener('click', () => {
+            authModal.classList.remove('active');
+        });
+
+        toggleAuth.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isLoginMode) {
+                showRegisterModal();
+            } else {
+                showLoginModal();
+            }
+        });
+
+        // Handle form submission
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const selectedBusinessType = businessTypeSelect.value;
+            
+            if (!isLoginMode && selectedBusinessType) {
+                // Set workspace based on business type
+                const workspaceSelector = document.getElementById('workspaceSelector');
+                workspaceSelector.value = selectedBusinessType;
+            }
+            
+            // Hide landing page, show app
+            landingPage.style.display = 'none';
+            appContainer.style.display = 'flex';
+            authModal.classList.remove('active');
+            
+            // Show success message
+            alert(isLoginMode ? '¡Bienvenido de vuelta!' : `¡Cuenta creada! Tu workspace de ${businessTypeSelect.options[businessTypeSelect.selectedIndex].text} está listo.`);
+        });
+
+        // Close modal when clicking outside
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        const views = {
+            dashboard: document.getElementById('dashboardView'),
+            pipeline: document.getElementById('pipelineView'),
+            contacts: document.getElementById('contactsView')
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewName = item.dataset.view;
+                
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                Object.keys(views).forEach(key => {
+                    if (views[key]) {
+                        views[key].classList.add('hidden');
+                    }
+                });
+
+                if (views[viewName]) {
+                    views[viewName].classList.remove('hidden');
+                }
+            });
+        });
+
+        // Workspace Selector
+        const workspaceSelector = document.getElementById('workspaceSelector');
+        workspaceSelector.addEventListener('change', (e) => {
+            const workspace = e.target.value;
+            console.log('Workspace cambiado a:', workspace);
+            
+            // Aquí se implementaría la lógica para cambiar los campos y pipelines
+            // según el tipo de entorno seleccionado
+            alert(`Configuración cambiada a: ${e.target.options[e.target.selectedIndex].text}`);
+        });
+
+        // AI Assistant
+        const aiFab = document.getElementById('aiFab');
+        const aiAssistant = document.getElementById('aiAssistant');
+        const closeAI = document.getElementById('closeAI');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const aiMessages = document.getElementById('aiMessages');
+
+        aiFab.addEventListener('click', () => {
+            aiAssistant.classList.add('active');
+            aiFab.classList.add('hidden');
+        });
+
+        closeAI.addEventListener('click', () => {
+            aiAssistant.classList.remove('active');
+            aiFab.classList.remove('hidden');
+        });
+
+        aiSendBtn.addEventListener('click', () => {
+            const message = aiInput.value.trim();
+            if (!message) return;
+
+            // Agregar mensaje del usuario
+            const userMsg = document.createElement('div');
+            userMsg.className = 'ai-message user';
+            userMsg.textContent = message;
+            aiMessages.appendChild(userMsg);
+
+            aiInput.value = '';
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+
+            // Simular respuesta de IA (aquí se conectaría a Groq API)
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'ai-message assistant';
+                aiMsg.textContent = 'Esta es una respuesta simulada. En producción, esto se conectaría a la API de Groq con modelos como Llama 3.3, DeepSeek R1 o Qwen 2.5 para generar respuestas inteligentes basadas en tus datos del CRM.';
+                aiMessages.appendChild(aiMsg);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
+            }, 1000);
+        });
+
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                aiSendBtn.click();
+            }
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            console.log('Buscando:', query);
+            // Implementar lógica de búsqueda
+        });
+
+        // New Deal Button
+        const newDealBtn = document.getElementById('newDealBtn');
+        newDealBtn.addEventListener('click', () => {
+            alert('Modal para crear nuevo trámite/deal (a implementar)');
+        });
+    </script>
+</body>
+</html>
